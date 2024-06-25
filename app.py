@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, send_file, Response
+from flask import Flask, request, render_template, Response,redirect,url_for
 import os
 from process import generate_frames
 
@@ -25,10 +25,15 @@ def upload_file():
     
 @app.route('/video_feed')
 def video_feed():
+    target_label = request.args.get('object_name', default='')
     input_path = r'static/uploads/input.mp4'  
-    return Response(generate_frames(input_path),
+    return Response(generate_frames(input_path, target_label),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
+@app.route('/search', methods=['POST'])
+def search():
+    object_name = request.form['name']
+    return redirect(url_for('video_feed', object_name=object_name))
 
 if __name__ == "__main__":
     os.makedirs('uploads', exist_ok=True)

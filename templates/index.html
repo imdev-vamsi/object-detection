@@ -3,24 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="/static/index.css">
     <title>Video Object Detection</title>
 </head>
 <body>
-    <h1>Upload Video for Object Detection</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" accept="video/*">
-        <input type="submit" value="Upload">
-    </form>
-     
-    {% if send_file %}
-    <h2>Processed Video Stream</h2>
-    <img id="video" src="{{ url_for('video_feed') }}" width="720" height="480">
+    <header>
+    <nav>
+        <input id="nav-toggle" type="checkbox">
+        <div class="logo content" style="margin:0px;">Video Object Detection<a href="#"></a></div>
+        <ul class="links">
+            <li><form action="/search" method="post" enctype="multipart/form-data">
+                <input type="text" name="name" placeholder="Enter Object" required>
+                <input type="submit" value="Search">
+            </form></li>
+        </ul>
+    </nav>
+    </header>
+    <main>
+        <div class="content">
+            <!--<h1>Upload Video for Object Detection</h1>-->
+            <div class="upload-container">
 
-    
-    <video width="720" height="550"  autoplay>
-        <source src="/static/uploads/input.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-    {% endif %}
+                <form action="/upload" method="post" enctype="multipart/form-data">
+                    <span>Choose Video</span>
+                    <label class="custom-file-upload">
+                        <input type="file" name="file" accept="video/*">
+
+                        <span class="material-symbols-outlined">
+                            upload_file
+                            </span>
+                    </label>
+                    <input type="submit" value="Upload" class="upload-button">
+                </form>
+            </div>
+
+            {% if send_file %}
+            <div class="video-main">
+            <div class="video-upload">
+            <h2>Original Video Stream</h2>
+            <video width="720" height="410"  controls autoplay>
+                <source src="{{send_file}}" type="video/mp4">
+                Your browser does not support the video tag.
+            </video></div>
+
+            <div class="video-detect">
+            <h2>Processed Video Stream</h2>
+            <img id="video" src="{{ url_for('video_feed') }}" width="720" height="410">
+            </div></div>
+            {% endif %}
+        </div>
+    </main>
+
 </body>
 </html>
