@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, Response,redirect,url_for
 import os
 from process import generate_frames
+import time
 
 app = Flask(__name__)
 
@@ -20,7 +21,8 @@ def upload_file():
     if file:
         input_path = r"static/uploads/input.mp4"
         file.save(input_path)
-        return render_template('index.html',send_file=input_path)  
+        timestamp = int(time.time())
+        return render_template('index.html',send_file=input_path, timestamp=timestamp)  
 
     
 @app.route('/video_feed')
@@ -33,7 +35,8 @@ def video_feed():
 @app.route('/search', methods=['POST'])
 def search():
     object_name = request.form['name']
-    return redirect(url_for('video_feed', object_name=object_name))
+    timestamp = int(time.time())
+    return render_template('index.html', object_name=object_name, timestamp=timestamp)
 
 if __name__ == "__main__":
     os.makedirs('uploads', exist_ok=True)

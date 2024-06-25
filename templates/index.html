@@ -38,18 +38,18 @@
                 </form>
             </div>
 
-            {% if send_file %}
+            {% if send_file or object_name%}
             <div class="video-main">
             <div class="video-upload">
             <h2>Original Video Stream</h2>
             <video width="720" height="410"  controls autoplay>
-                <source src="{{send_file}}" type="video/mp4">
+                <source src="static/uploads/input.mp4?v={{ timestamp }}" type="video/mp4">
                 Your browser does not support the video tag.
             </video></div>
 
             <div class="video-detect">
             <h2>Processed Video Stream</h2>
-            <img id="video" src="{{ url_for('video_feed') }}" width="720" height="410">
+            <img id="video" src="{{ url_for('video_feed',object_name=object_name) }}" width="720" height="410">
             </div></div>
             {% endif %}
         </div>
