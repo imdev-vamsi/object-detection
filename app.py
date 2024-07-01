@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, Response,redirect,url_for
+from flask import Flask, request, render_template, Response,redirect,url_for,jsonify
 import os
 from process import generate_frames
 import time
@@ -36,7 +36,8 @@ def video_feed():
 def search():
     object_name = request.form['name']
     timestamp = int(time.time())
-    return render_template('index.html', object_name=object_name, timestamp=timestamp)
+    video_url= url_for('video_feed',object_name=object_name)
+    return jsonify({'video_url':video_url})
 
 if __name__ == "__main__":
     os.makedirs('uploads', exist_ok=True)
