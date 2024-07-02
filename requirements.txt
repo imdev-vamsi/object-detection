@@ -5,3 +5,5 @@ flask
 pandas
 ultralytics
 requests
+spacy
+inflect
