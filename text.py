@@ -22,7 +22,7 @@ categories = [
 category_synonyms = {
     "person": {"individual", "someone", "somebody", "mortal", "soul", "human", "human being", "human person", "citizen", "man", "woman", "child", "adult", "individual"},
     "bicycle": {"bike", "cycle", "two-wheeler", "pushbike", "velocipede", "tandem", "mountain bike", "road bike", "racer", "cyclist's vehicle"},
-    "car": {"automobile", "vehicle", "auto", "machine", "motorcar", "sedan", "coupe", "convertible", "hatchback", "SUV", "van", "truck"},
+    "car": {"automobile", "vehicle", "auto", "machine", "motorcar", "sedan", "coupe", "convertible", "hatchback", "SUV"},
     "motorcycle": {"bike", "motorbike", "chopper", "scooter", "moped", "two-wheeler", "dirt bike", "motorcross", "hog", "cycle"},
     "airplane": {"plane", "aeroplane", "aircraft", "jet", "airliner", "propeller plane", "biplane", "seaplane", "jumbo jet", "fighter plane"},
     "bus": {"coach", "public transport", "shuttle", "transit bus", "city bus", "school bus", "minibus", "double-decker", "tour bus", "charter bus"},
@@ -102,46 +102,92 @@ category_synonyms = {
     "toothbrush": {"dental brush", "tooth brush", "oral brush", "dental hygiene tool", "teeth brush", "bristle brush", "electric toothbrush", "manual toothbrush", "dental care brush", "oral care brush"}
 }
 
-
-# Create a reverse mapping from synonym to main category
-synonym_to_category = {}
-for category, synonyms in category_synonyms.items():
-    for synonym in synonyms:
-        synonym_to_category[synonym] = category
-# Convert categories to a set for faster lookup
 categories_set = set(categories)
 
 # Initialize the inflect engine
 p = inflect.engine()
 
+
+synonym_to_category = {}
+for category, synonyms in category_synonyms.items():
+    for synonym in synonyms:
+        synonym_to_category[synonym] = category
+
+# Define vehicle-related categories
+vehicle_categories = {"bicycle", "car", "motorcycle", "bus", "train", "truck", "boat", "airplane"}
+
 def find_matching_categories(text):
     # Process the text with spacy
     doc = nlp(text.lower())
+
     include_list = set()
     exclude_list = set()
+
     # Create a list of tokens for easier manipulation
     tokens = [token.text for token in doc]
 
-    # Check for single-word matches and handle negations
+    # Flag to handle "only" statements
+    only_flag = False
+
+    # Flag to handle negations
+    negate_flag = False
+
+    # Flag to check if "vehicle" or "vehicles" was mentioned
+    vehicles_mentioned = False
+
+    # Iterate through tokens in the text
     for token in doc:
         singular_form = p.singular_noun(token.text) if p.singular_noun(token.text) else token.text
 
+        # Check for "only" statement
+        if token.text == "only":
+            only_flag = True
+            negate_flag = False
         # Check for negation
-        if token.dep_ == "neg":
-            head = token.head
-            head_singular_form = p.singular_noun(head.text) if p.singular_noun(head.text) else head.text
-            if head.text in categories_set or head_singular_form in categories_set:
-                exclude_list.add(head.text if head.text in categories_set else head_singular_form)
+        elif token.dep_ == "neg":
+            negate_flag = True
         else:
             # Check if token is a synonym and map it to the main category
             if token.text in synonym_to_category:
                 main_category = synonym_to_category[token.text]
-                include_list.add(main_category)
+                if only_flag:
+                    include_list.clear()
+                    include_list.add(main_category)
+                    only_flag = False
+                elif negate_flag:
+                    exclude_list.add(main_category)
+                    negate_flag = False
+                else:
+                    include_list.add(main_category)
             elif singular_form in synonym_to_category:
                 main_category = synonym_to_category[singular_form]
-                include_list.add(main_category)
+                if only_flag:
+                    include_list.clear()
+                    include_list.add(main_category)
+                    only_flag = False
+                elif negate_flag:
+                    exclude_list.add(main_category)
+                    negate_flag = False
+                else:
+                    include_list.add(main_category)
             elif token.text in categories_set or singular_form in categories_set:
-                include_list.add(token.text if token.text in categories_set else singular_form)
+                if only_flag:
+                    include_list.clear()
+                    include_list.add(token.text if token.text in categories_set else singular_form)
+                    only_flag = False
+                elif negate_flag:
+                    exclude_list.add(token.text if token.text in categories_set else singular_form)
+                    negate_flag = False
+                else:
+                    include_list.add(token.text if token.text in categories_set else singular_form)
+
+            # Check for "vehicle" or "vehicles"
+            if singular_form in {"vehicle", "vehicles"}:
+                vehicles_mentioned = True
+
+    # If "vehicle" or "vehicles" was mentioned, include all vehicle-related categories
+    if vehicles_mentioned:
+        include_list.update(vehicle_categories)
 
     # Check for multi-word categories
     for category in categories:
