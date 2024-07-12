@@ -39,6 +39,6 @@ def search():
     video_url= url_for('video_feed',object_name=object_name)
     return jsonify({'video_url':video_url})
 
-if __name__ == "__main__":
-    os.makedirs('uploads', exist_ok=True)
-    app.run(debug=True)
+# if __name__ == "__main__":
+#     os.makedirs('uploads', exist_ok=True)
+#     app.run(debug=True)
