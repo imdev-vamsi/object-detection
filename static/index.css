@@ -5,11 +5,12 @@
 body {
     font-family: 'Poppins', sans-serif;
     display: flex;
-    /* justify-content: center;
-    align-items: center; */
+    justify-content: center;
+    align-items: center;
     height: 100vh;
     margin: 0;
-    background: linear-gradient(to right, #fff 50%, #5bdae3 50%);;
+    background: #fff;
+    background-size: cover;
 }
 
 nav {
@@ -175,4 +176,27 @@ h1 {
     margin-bottom: 20px;
     text-align: center;
     font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    nav .links {
+        flex-direction: column;
+    }
+
+    nav .links li {
+        margin: 10px 0;
+    }
+
+    .video-main {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .video-upload,
+    .video-detect {
+        max-width: 90%;
+        padding: 10px;
+    }
+
+
 }
