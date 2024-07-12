@@ -1,8 +1,11 @@
 import spacy
 import inflect
-
+import os
 # Load the English NLP model
-nlp = spacy.load('en_core_web_sm')
+try :
+    nlp = spacy.load('en_core_web_sm')
+except :
+    os.system("python -m spacy download en_core_web_sm")
 
 # Define the 80 categories from the YOLOv5 model
 categories = [

@@ -25,7 +25,7 @@ def generate_frames(input_video_path, target_label):
             for result in results.xyxy[0]:
                 x1, y1, x2, y2, conf, cls = result
                 label = model.names[int(cls)]
-                if label in target_labels:
+                if label in target_labels and conf > 0.45:
                     # frame_object_count += 1
                     # total_object_count += 1
                     cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (255, 255, 255), 2)
