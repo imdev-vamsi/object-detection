@@ -1,4 +1,5 @@
-from flask import Flask, request, render_template, Response, redirect, url_for, jsonify
+
+from flask import Flask, request, render_template, Response,redirect,url_for,jsonify
 import os
 from process import generate_frames
 import time
@@ -19,11 +20,12 @@ def upload_file():
         return 'No selected file'
     
     if file:
-        input_path = r"static/uploads/"
+        input_path = r"static/uploads/input.mp4"
         file.save(input_path)
         timestamp = int(time.time())
-        return render_template('index.html', send_file=input_path, timestamp=timestamp)  
+        return render_template('index.html',send_file=input_path, timestamp=timestamp)  
 
+    
 @app.route('/video_feed')
 def video_feed():
     target_label = request.args.get('object_name', default='')
@@ -35,10 +37,10 @@ def video_feed():
 def search():
     object_name = request.form['name']
     timestamp = int(time.time())
-    video_url = url_for('video_feed', object_name=object_name)
-    return jsonify({'video_url': video_url})
+    video_url= url_for('video_feed',object_name=object_name)
+    return jsonify({'video_url':video_url})
 
-if __name__ == "__main__":
-    os.makedirs('uploads', exist_ok=True)
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+# if __name__ == "__main__":
+#     os.makedirs('uploads', exist_ok=True)
+#     app.run(debug=True)
+
