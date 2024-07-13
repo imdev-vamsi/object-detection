@@ -1,7 +1,7 @@
 import cv2
 import torch
 from text import find_matching_categories
-model = torch.hub.load("ultralytics/yolov5", "yolov5s")
+model = torch.hub.load("ultralytics/yolov5", "yolov5s",trust_repo=True)
 
 import cv2
 
